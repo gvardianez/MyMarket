@@ -47,20 +47,7 @@ public class ProductController {
             @RequestParam(name = "min_price", required = false) Integer minPrice,
             @RequestParam(name = "max_price", required = false) Integer maxPrice
     ) {
-        if (page < 1) {
-            page = 1;
-        }
-        Specification<Product> spec = Specification.where(null);
-        if (titlePart != null) {
-            spec = spec.and(ProductsSpecifications.titleLike(titlePart));
-        }
-        if (minPrice != null) {
-            spec = spec.and(ProductsSpecifications.priceGreaterOrEqualsThan(BigDecimal.valueOf(minPrice)));
-        }
-        if (maxPrice != null) {
-            spec = spec.and(ProductsSpecifications.priceLessThanOrEqualsThan(BigDecimal.valueOf(maxPrice)));
-        }
-        return pageConverter.entityToDto(productService.findAll(page - 1, pageSize, spec).map(productConverter::entityToDto));
+        return pageConverter.entityToDto(productService.findAll(minPrice, maxPrice, titlePart, page, pageSize).map(productConverter::entityToDto));
     }
 
     @Operation(

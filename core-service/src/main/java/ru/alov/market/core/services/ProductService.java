@@ -9,7 +9,9 @@ import ru.alov.market.api.dto.ProductDto;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 import ru.alov.market.core.repositories.ProductRepository;
 import ru.alov.market.core.entities.Product;
+import ru.alov.market.core.repositories.specifications.ProductsSpecifications;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -18,8 +20,21 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
 
-    public Page<Product> findAll(int page, int pageSize, Specification<Product> specification) {
-        return productRepository.findAll(specification, PageRequest.of(page, pageSize));
+    public Page<Product> findAll(Integer minPrice, Integer maxPrice, String partTitle, Integer page, Integer pageSize) {
+        if (page < 1) {
+            page = 1;
+        }
+        Specification<Product> spec = Specification.where(null);
+        if (minPrice != null) {
+            spec = spec.and(ProductsSpecifications.priceGreaterOrEqualsThan(BigDecimal.valueOf(minPrice)));
+        }
+        if (maxPrice != null) {
+            spec = spec.and(ProductsSpecifications.priceLessThanOrEqualsThan(BigDecimal.valueOf(maxPrice)));
+        }
+        if (partTitle != null) {
+            spec = spec.and(ProductsSpecifications.titleLike(partTitle));
+        }
+        return productRepository.findAll(spec, PageRequest.of(page - 1, pageSize));
     }
 
     public void deleteById(Long id) {

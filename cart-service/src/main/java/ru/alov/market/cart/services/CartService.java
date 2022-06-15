@@ -20,7 +20,7 @@ public class CartService {
             Cart cart = new Cart();
             redisTemplate.opsForValue().set(cartId, cart);
         }
-        return (Cart)redisTemplate.opsForValue().get(cartId);
+        return (Cart) redisTemplate.opsForValue().get(cartId);
     }
 
     public void addToCart(String cartId, Long productId) {
@@ -34,6 +34,14 @@ public class CartService {
         execute(cartId, cart -> cart.remove(productId));
     }
 
+    public void changeProductQuantity(String cartId, Long id, Integer delta) {
+        execute(cartId, cart -> cart.changeProductQuantity(id, delta));
+    }
+
+    public void setProductQuantity(String cartId, Long id, Integer newQuantity) {
+        execute(cartId, cart -> cart.setProductQuantity(id, newQuantity));
+    }
+
     private void execute(String cartId, Consumer<Cart> action) {
         Cart cart = getCurrentCart(cartId);
         action.accept(cart);
@@ -45,8 +53,8 @@ public class CartService {
         if (guestCart.getItems().isEmpty()) return;
         Cart userCart = getCurrentCart(username);
         userCart.merge(guestCart);
-        updateCart(username,userCart);
-        updateCart(guestCartId,guestCart);
+        updateCart(username, userCart);
+        updateCart(guestCartId, guestCart);
     }
 
     public void updateCart(String cartId, Cart cart) {

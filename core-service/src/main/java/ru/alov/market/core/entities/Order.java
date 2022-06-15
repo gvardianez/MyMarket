@@ -50,4 +50,10 @@ public class Order {
         CREATED, PAID, CANCELED, COMPLETED
     }
 
+    public Order(String username, List<OrderItem> orderItems, BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+        this.username = username;
+        orderItems.forEach(orderItem -> orderItem.setOrder(this));
+        this.items = orderItems;
+    }
 }

@@ -2,6 +2,8 @@ package ru.alov.market.cart.utils;
 
 import lombok.Data;
 import ru.alov.market.api.dto.ProductDto;
+import ru.alov.market.api.exception.ResourceNotFoundException;
+import ru.alov.market.cart.exceptions.FieldValidationException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -45,6 +47,34 @@ public class Cart {
         }
         items.add(cartItem);
         recalculate();
+    }
+
+    public void changeProductQuantity(Long id, Integer delta) {
+        for (CartItem item : items) {
+            if (item.getProductId().equals(id)) {
+                item.changeQuantity(delta);
+                if (item.getQuantity() <= 0) items.remove(item);
+                recalculate();
+                return;
+            }
+        }
+        throw new ResourceNotFoundException("Product not found, id = " + id);
+    }
+
+    public void setProductQuantity(Long id, Integer newQuantity) {
+        if (newQuantity < 0) throw new FieldValidationException("New quantity must be at least zero");
+        if (newQuantity == 0) {
+            remove(id);
+            return;
+        }
+        for (CartItem item : items) {
+            if (item.getProductId().equals(id)) {
+                item.setQuantity(newQuantity);
+                recalculate();
+                return;
+            }
+        }
+        throw new ResourceNotFoundException("Product not found, id = " + id);
     }
 
     public void remove(Long productId) {

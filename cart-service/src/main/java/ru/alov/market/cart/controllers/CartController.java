@@ -89,8 +89,19 @@ public class CartController {
     )
     @GetMapping("/{guestCartId}/merge")
     public void mergeGuestAndUserCart(@RequestHeader String username, @PathVariable String guestCartId) {
-        System.out.println(username);
         cartService.mergeCart(username, guestCartId);
+    }
+
+    @GetMapping("/{guestCartId}/change_quantity")
+    public void changeProductQuantityInCart(@RequestHeader(required = false) String username, @PathVariable String guestCartId, @RequestParam Long productId, @RequestParam Integer delta) {
+        String currentCartId = selectCartId(username, guestCartId);
+        cartService.changeProductQuantity(currentCartId, productId, delta);
+    }
+
+    @GetMapping("/{guestCartId}/set_quantity")
+    public void setNewQuantity(@RequestHeader(required = false) String username, @PathVariable String guestCartId, @RequestParam Long productId, @RequestParam Integer newQuantity) {
+        String currentCartId = selectCartId(username, guestCartId);
+        cartService.setProductQuantity(currentCartId, productId, newQuantity);
     }
 
     private String selectCartId(String username, String guestCartId) {
