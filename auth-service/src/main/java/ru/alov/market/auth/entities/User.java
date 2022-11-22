@@ -28,6 +28,9 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "email_status")
+    private String emailStatus;
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -41,4 +44,18 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public User(Long id, String username, String password, String email, String emailStatus, Collection<Role> roles) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.emailStatus = emailStatus;
+        this.roles = roles;
+    }
+
+    public enum UserStatus {
+        MAIL_CONFIRMED, MAIL_NOT_CONFIRMED
+    }
+
 }

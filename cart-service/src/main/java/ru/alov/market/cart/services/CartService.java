@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 @Service
 @RequiredArgsConstructor
 public class CartService {
+
     private final ProductServiceIntegration productServiceIntegration;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -24,10 +25,7 @@ public class CartService {
     }
 
     public void addToCart(String cartId, Long productId) {
-        execute(cartId, cart -> {
-            ProductDto p = productServiceIntegration.findById(productId);
-            cart.add(p);
-        });
+        productServiceIntegration.findById(productId).subscribe(productDto -> execute(cartId, cart -> cart.add(productDto)));
     }
 
     public void removeFromCart(String cartId, Long productId) {

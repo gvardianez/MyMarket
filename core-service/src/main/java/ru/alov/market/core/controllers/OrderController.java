@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 import ru.alov.market.api.dto.OrderDetailsDto;
 import ru.alov.market.api.dto.OrderDto;
 import ru.alov.market.api.exception.AppError;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Tag(name = "Заказы", description = "Методы работы с заказами")
 public class OrderController {
+
     private final OrderService orderService;
     private final OrderConverter orderConverter;
 
@@ -54,8 +56,8 @@ public class OrderController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderDto createNewOrder(@RequestHeader String username, @RequestBody OrderDetailsDto orderDetailsDto) {
-       return orderConverter.entityToDto(orderService.createNewOrder(username, orderDetailsDto));
+    public Mono<OrderDto> createNewOrder(@RequestHeader String username, @RequestHeader String email, @RequestBody OrderDetailsDto orderDetailsDto) {
+        return orderService.createNewOrder(username, email, orderDetailsDto).map(orderConverter::entityToDto);
     }
 
     @GetMapping("/{id}")

@@ -26,7 +26,7 @@ public class CartItem {
         calculateTotalPrice(quantity);
     }
 
-    public void setQuantity(int newQuantity) {
+    public void setNewQuantity(int newQuantity) {
         this.quantity = newQuantity;
         calculateTotalPrice(quantity);
     }

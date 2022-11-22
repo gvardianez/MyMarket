@@ -1,9 +1,13 @@
 package ru.alov.market.api.dto;
 
 public class RegisterUserDto {
+
     private String username;
+
     private String password;
+
     private String confirmPassword;
+
     private String email;
 
     public String getUsername() {

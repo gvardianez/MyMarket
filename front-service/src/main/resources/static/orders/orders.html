@@ -8,6 +8,8 @@
             <td>ID</td>
             <td>Адрес доставки</td>
             <td>Стоимость</td>
+            <td>Email</td>
+            <td>Статус</td>
             <td></td>
         </tr>
         <tbody>
@@ -15,6 +17,8 @@
             <td>{{order.id}}</td>
             <td>{{order.address}}</td>
             <td>{{order.totalPrice}}</td>
+            <td>{{order.email}}</td>
+            <td>{{order.status}}</td>
             <td>
                 <button class="btn btn-primary" ng-click="goToPay(order.id)">Оплатить</button>
             </td>
@@ -22,23 +26,3 @@
         </tbody>
     </table>
 </div>
-
-<!--<div>-->
-<!--    <p></p>-->
-<!--    <h3>Заказы</h3>-->
-<!--    <p></p>-->
-<!--    <table class="table table-hover">-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <td>ID Заказа</td>-->
-<!--            <td>Цена</td>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        <tr ng-repeat="o in orders">-->
-<!--            <td>{{o.id}}</td>-->
-<!--            <td>{{o.totalPrice}}</td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--    </table>-->
-<!--</div>-->

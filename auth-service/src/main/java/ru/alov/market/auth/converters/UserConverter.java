@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class UserConverter {
 
     public UserProfileDto entityToDto(User user){
-        return new UserProfileDto(user.getId(), user.getUsername(), user.getEmail(), user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+        return new UserProfileDto(user.getId(), user.getUsername(), user.getEmail(), user.getRoles().stream().map(Role::getName).collect(Collectors.toList()),user.getEmailStatus());
     }
 
 }

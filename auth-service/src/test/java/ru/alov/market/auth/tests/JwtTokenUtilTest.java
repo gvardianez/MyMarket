@@ -5,9 +5,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
+import ru.alov.market.api.dto.UserProfileDto;
 import ru.alov.market.auth.utils.JwtTokenUtil;
 
 import java.util.List;
@@ -21,12 +20,12 @@ public class JwtTokenUtilTest {
 
     @Test
     public void generateTokenTest() throws InterruptedException {
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User("Vova Pupkin", "12345", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        UserProfileDto user = new UserProfileDto(1L, "Vova Pupkin", "email", List.of("ROLE_ADMIN"), "CONFIRMED");
 
-        String token = jwtTokenUtil.generateToken(userDetails);
+        String token = jwtTokenUtil.generateAccessToken(user);
 
-        String username = jwtTokenUtil.getUsernameFromToken(token);
-        List<String> roleList = jwtTokenUtil.getRoles(token);
+        String username = jwtTokenUtil.getUsernameFromAccessToken(token);
+        List<String> roleList = jwtTokenUtil.getRolesFromAccessToken(token);
 
         Assertions.assertEquals(username, "Vova Pupkin");
         Assertions.assertEquals(1, roleList.size());
@@ -34,7 +33,7 @@ public class JwtTokenUtilTest {
 
         Thread.sleep(1000);
 
-        Assertions.assertThrows(ExpiredJwtException.class, () -> jwtTokenUtil.getUsernameFromToken(token));
+        Assertions.assertThrows(ExpiredJwtException.class, () -> jwtTokenUtil.getUsernameFromAccessToken(token));
     }
 
 }

@@ -6,20 +6,31 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class JwtResponse {
 
     @Schema(description = "Строковое представление токена", required = true, example = "fsdffsdfsd.dfsdfsdfsdfdsfsdf.213wefwe3q2rwefserfwe")
-    private String token;
+    private String accessToken;
 
-    public String getToken() {
-        return token;
+    private String refreshToken;
+
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     public JwtResponse() {
     }
 
-    public JwtResponse(String token) {
-        this.token = token;
+    public JwtResponse(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }

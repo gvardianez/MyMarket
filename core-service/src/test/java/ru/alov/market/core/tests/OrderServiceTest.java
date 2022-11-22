@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import ru.alov.market.api.dto.CartDto;
 import ru.alov.market.api.dto.CartItemDto;
 import ru.alov.market.api.dto.OrderDetailsDto;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest(classes = OrderService.class)
+@ActiveProfiles("test")
 public class OrderServiceTest {
 
     @Autowired
@@ -38,19 +40,18 @@ public class OrderServiceTest {
     @MockBean
     private ProductService productService;
 
-    public static String cartId = "@3rfwsefge";
-
     @Test
     public void createNewOrderTest() {
         String username = "Vasya Pupkin";
+        String email = "email";
 
         CartDto invalidCartDto = new CartDto(Collections.EMPTY_LIST, BigDecimal.ZERO);
         Mockito.doReturn(invalidCartDto)
-                .when(cartServiceIntegration)
-                .getCurrentUserCart(cartId);
-        Assertions.assertThrows(IllegalStateException.class, () -> orderService.createNewOrder(username, new OrderDetailsDto("sdsada", "2121")));
+               .when(cartServiceIntegration)
+               .getCurrentUserCart(username);
+        Assertions.assertThrows(IllegalStateException.class, () -> orderService.createNewOrder(username, email, new OrderDetailsDto("sdsada", "2121", "email")));
 
-        Assertions.assertThrows(FieldValidationException.class, () -> orderService.createNewOrder(username, new OrderDetailsDto()));
+        Assertions.assertThrows(FieldValidationException.class, () -> orderService.createNewOrder(username, email, new OrderDetailsDto()));
 
         Category category = new Category();
         category.setId(1L);
@@ -72,21 +73,21 @@ public class OrderServiceTest {
         CartDto testCartDto = new CartDto(List.of(new CartItemDto(productButter.getId(), productButter.getTitle(), 3, productButter.getPrice(), productButter.getPrice().multiply(BigDecimal.valueOf(3))), new CartItemDto(productBread.getId(), productBread.getTitle(), 2, productBread.getPrice(), productBread.getPrice().multiply(BigDecimal.valueOf(2)))), BigDecimal.valueOf(200));
 
         Mockito.doReturn(testCartDto)
-                .when(cartServiceIntegration)
-                .getCurrentUserCart(cartId);
+               .when(cartServiceIntegration)
+               .getCurrentUserCart(username);
 
         Mockito.doReturn(Optional.of(productButter))
-                .when(productService)
-                .findById(productButter.getId());
+               .when(productService)
+               .findById(productButter.getId());
 
         Mockito.doReturn(Optional.of(productBread))
-                .when(productService)
-                .findById(productBread.getId());
+               .when(productService)
+               .findById(productBread.getId());
 
-        orderService.createNewOrder(username, new OrderDetailsDto("sdsada", "2121"));
+        orderService.createNewOrder(username, email, new OrderDetailsDto("sdsada", "2121", "email"));
 
         Mockito.verify(orderRepository, Mockito.times(1)).save(ArgumentMatchers.any());
-        Mockito.verify(cartServiceIntegration, Mockito.times(1)).clearCart(cartId);
+        Mockito.verify(cartServiceIntegration, Mockito.times(1)).clearCart(username);
     }
 
 }

@@ -32,7 +32,7 @@ public class CartController {
             }
     )
     @GetMapping("/generate_id")
-    public StringResponse generateGuestCartId() {
+    public StringResponse  generateGuestCartId() {
         return new StringResponse(UUID.randomUUID().toString());
     }
 
@@ -102,6 +102,12 @@ public class CartController {
     public void setNewQuantity(@RequestHeader(required = false) String username, @PathVariable String guestCartId, @RequestParam Long productId, @RequestParam Integer newQuantity) {
         String currentCartId = selectCartId(username, guestCartId);
         cartService.setProductQuantity(currentCartId, productId, newQuantity);
+    }
+
+    @GetMapping("/{guestCartId}/remove/{productId}")
+    public void remove(@RequestHeader(required = false) String username, @PathVariable String guestCartId, @PathVariable Long productId) {
+        String currentCartId = selectCartId(username, guestCartId);
+        cartService.removeFromCart(selectCartId(username, currentCartId), productId);
     }
 
     private String selectCartId(String username, String guestCartId) {

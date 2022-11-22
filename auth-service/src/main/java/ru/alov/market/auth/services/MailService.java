@@ -16,7 +16,8 @@ public class MailService {
     private final JavaMailSender sender;
 
     public void sendRegistrationMail(UserProfileDto userProfileDto) throws MessagingException {
-        sendMail(userProfileDto.getEmail(), "Регистрация успешно пройдена", "Имя пользователя " + userProfileDto.getUsername());
+        sendMail(userProfileDto.getEmail(), "Регистрация успешно пройдена", "Имя пользователя " + userProfileDto.getUsername()
+                 + "\nперейдите по ссылке для подтверждения почты: " + "http://localhost:3000/market-front/#!/confirm_email/" + userProfileDto.getUsername() + "/" + userProfileDto.getEmail());
     }
 
     private void sendMail(String email, String subject, String text) throws MessagingException {
@@ -27,6 +28,5 @@ public class MailService {
         helper.setText(text, true);
         sender.send(message);
     }
-
 
 }

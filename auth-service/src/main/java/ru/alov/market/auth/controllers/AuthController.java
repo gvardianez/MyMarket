@@ -6,27 +6,28 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import ru.alov.market.api.dto.JwtRequest;
-import ru.alov.market.api.dto.JwtResponse;
+import ru.alov.market.api.dto.*;
 import ru.alov.market.api.exception.AppError;
+import ru.alov.market.auth.services.AuthService;
 import ru.alov.market.auth.utils.JwtTokenUtil;
 import ru.alov.market.auth.services.UserService;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/authenticate")
 @Tag(name = "Авторизация", description = "Методы работы с аторизацией пользователя")
 public class AuthController {
 
-    private final UserService userService;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final AuthenticationManager authenticationManager;
+    private final AuthService authService;
 
     @Operation(
             summary = "Запрос на создание токена безопасности для пользователя",
@@ -41,15 +42,31 @@ public class AuthController {
                     )
             }
     )
-    @PostMapping("/authenticate")
-    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-        } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(new AppError("CHECK_TOKEN_ERROR", "Некорректный логин или пароль"), HttpStatus.UNAUTHORIZED);
-        }
-        UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
-        String token = jwtTokenUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new JwtResponse(token));
+    @PostMapping()
+    public ResponseEntity<?> login(@RequestBody JwtRequest authRequest) {
+        JwtResponse jwtResponse = authService.getJwtTokens(authRequest);
+        return ResponseEntity.ok(jwtResponse);
     }
+
+//    @PostMapping()
+//    public ResponseEntity<?> login(@RequestBody JwtRequest authRequest, HttpServletRequest request, HttpServletResponse response) {
+//        System.out.println(Arrays.toString(request.getCookies()));
+//        JwtResponse jwtResponse = authService.getJwtTokens(authRequest, response);
+//        System.out.println(jwtResponse.getAccessToken());
+//        System.out.println(response.getHeader(HttpHeaders.SET_COOKIE));
+//        return ResponseEntity.ok(jwtResponse);
+//    }
+
+    @PostMapping("/refresh_tokens")
+    public ResponseEntity<?> refreshTokens(@RequestBody RefreshJwtRequest refreshJwtRequest) {
+        System.out.println("refresh:  " + refreshJwtRequest.getRefreshToken());
+        return ResponseEntity.ok(authService.refreshJwtTokens(refreshJwtRequest.getRefreshToken()));
+    }
+
+//    @GetMapping("/refresh_tokens")
+//    public ResponseEntity<?> refreshTokens(@CookieValue(value = "refresh-token", required = false) String refreshToken, HttpServletRequest request,HttpServletResponse response) {
+//        System.out.println(Arrays.toString(request.getCookies()));
+//        System.out.println(refreshToken);
+//        return ResponseEntity.ok(authService.refreshJwtTokens(refreshToken, response));
+//    }
 }

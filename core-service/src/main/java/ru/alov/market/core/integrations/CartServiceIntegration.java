@@ -2,6 +2,7 @@ package ru.alov.market.core.integrations;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,30 +18,28 @@ import java.util.function.Function;
 public class CartServiceIntegration {
     private final WebClient cartServiceWebClient;
 
-    public CartDto getCurrentUserCart(String username) {
+    public Mono<CartDto> getCurrentUserCart(String username) {
         return cartServiceWebClient.get()
-                .uri("/api/v1/cart/0")
-                .header("username", username)
-                .retrieve()
-                .onStatus(
-                        HttpStatus::is4xxClientError, // HttpStatus::is4xxClientError
-                        getClientResponseMonoFunction()
-                )
-                .bodyToMono(CartDto.class)
-                .block();
+                                   .uri("/api/v1/cart/0")
+                                   .header("username", username)
+                                   .retrieve()
+                                   .onStatus(
+                                           HttpStatus::is4xxClientError, // HttpStatus::is4xxClientError
+                                           getClientResponseMonoFunction()
+                                   )
+                                   .bodyToMono(CartDto.class);
     }
 
-    public void clearCart(String username) {
-        cartServiceWebClient.get()
-                .uri("/api/v1/cart/0/clear")
-                .header("username", username)
-                .retrieve()
-                .onStatus(
-                        HttpStatus::is4xxClientError, // HttpStatus::is4xxClientError
-                        getClientResponseMonoFunction()
-                )
-                .toBodilessEntity()
-                .block();
+    public Mono<ResponseEntity<Void>> clearCart(String username) {
+        return cartServiceWebClient.get()
+                                   .uri("/api/v1/cart/0/clear")
+                                   .header("username", username)
+                                   .retrieve()
+                                   .onStatus(
+                                           HttpStatus::is4xxClientError, // HttpStatus::is4xxClientError
+                                           getClientResponseMonoFunction()
+                                   )
+                                   .toBodilessEntity();
     }
 
     private Function<ClientResponse, Mono<? extends Throwable>> getClientResponseMonoFunction() {
