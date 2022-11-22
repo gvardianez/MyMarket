@@ -16,11 +16,18 @@ import java.util.List;
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
-    @Autowired
     private RouterValidator routerValidator;
+    private JwtUtil jwtUtil;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    public void setRouterValidator(RouterValidator routerValidator) {
+        this.routerValidator = routerValidator;
+    }
+
+    @Autowired
+    public void setJwtUtil(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     public AuthenticationFilter() {
         super(Config.class);
@@ -37,6 +44,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
             if (!isAuthMissing(request)) {
                 final String token = getAuthHeader(request);
+                System.out.println(token);
                 if (jwtUtil.isInvalid(token)) {
                     return this.onError(exchange, "Authorization header is invalid", HttpStatus.UNAUTHORIZED);
                 }
@@ -88,6 +96,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
         Claims claims = jwtUtil.getAllClaimsFromToken(token);
         exchange.getRequest().mutate()
                 .header("username", claims.getSubject())
+                .header("email", (String) claims.get("email"))
                 .header("role", String.valueOf(claims.get("role")))
                 .build();
     }

@@ -40,7 +40,7 @@ public class Cart {
     public final void addCartItem(CartItem cartItem) {
         for (CartItem item : items) {
             if (item.getProductId().equals(cartItem.getProductId())) {
-                item.setQuantity(item.getQuantity() + cartItem.getQuantity());
+                item.setNewQuantity(item.getQuantity() + cartItem.getQuantity());
                 recalculate();
                 return;
             }
@@ -69,7 +69,7 @@ public class Cart {
         }
         for (CartItem item : items) {
             if (item.getProductId().equals(id)) {
-                item.setQuantity(newQuantity);
+                item.setNewQuantity(newQuantity);
                 recalculate();
                 return;
             }
@@ -92,4 +92,5 @@ public class Cart {
         totalPrice = BigDecimal.ZERO;
         items.forEach(i -> totalPrice = totalPrice.add(i.getPrice()));
     }
+
 }

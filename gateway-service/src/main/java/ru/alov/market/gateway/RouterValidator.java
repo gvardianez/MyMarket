@@ -11,13 +11,11 @@ public class RouterValidator {
 
     public static final List<String> needAuthenticatedApiEndpoints = List.of(
             "core/api/v1/orders"
-//            "core/api/v1/products" для тестирования
     );
 
     public static final Map<String, String> needRoleApiEndpoints = Map.of(
 //            "core/api/v1/orders", "ROLE_ADMIN"
     );
-
 
     public boolean needAuthorization(ServerHttpRequest request) {
         return needAuthenticatedApiEndpoints.stream().anyMatch(uri -> request.getURI().getPath().contains(uri));

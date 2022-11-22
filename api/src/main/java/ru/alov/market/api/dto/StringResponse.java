@@ -1,6 +1,7 @@
 package ru.alov.market.api.dto;
 
 public class StringResponse {
+
     private String value;
 
     public String getValue() {

@@ -8,11 +8,15 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import ru.alov.market.api.dto.ProductDto;
 import ru.alov.market.api.exception.ResourceNotFoundException;
+import ru.alov.market.cart.configs.RedisConfig;
 import ru.alov.market.cart.exceptions.FieldValidationException;
 import ru.alov.market.cart.integrations.ProductServiceIntegration;
 import ru.alov.market.cart.services.CartService;
+import ru.alov.market.cart.utils.Cart;
 
 import java.math.BigDecimal;
 
@@ -25,13 +29,21 @@ public class CartServiceTests {
     @MockBean
     private ProductServiceIntegration productServiceIntegration;
 
+    @MockBean
+    private RedisTemplate<String,Object> redisTemplate;
+
+    @MockBean
+    private ValueOperations<String,Object> valueOperations;
+
     public static ProductDto milkDto;
     public static ProductDto breadDto;
     public static ProductDto cheeseDto;
-    public static String cartId = "@rtu321d";
+    public static Cart testCart;
+    public static String cartId = "test_cart";
 
     @BeforeAll
     public static void initProductsDto() {
+        testCart = new Cart();
         milkDto = new ProductDto(1L, "Молоко", BigDecimal.valueOf(50.00), "Еда");
         breadDto = new ProductDto(2L, "Хлеб", BigDecimal.valueOf(30.00), "Еда");
         cheeseDto = new ProductDto(3L, "Сыр", BigDecimal.valueOf(150.00), "Еда");
@@ -39,6 +51,14 @@ public class CartServiceTests {
 
     @BeforeEach
     public void clearCart() {
+        Mockito.doReturn(true)
+               .when(redisTemplate).hasKey(cartId);
+        Mockito.doReturn(valueOperations)
+               .when(redisTemplate)
+               .opsForValue();
+        Mockito.doReturn(testCart)
+               .when(valueOperations)
+               .get(cartId);
         cartService.clearCart(cartId);
     }
 

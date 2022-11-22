@@ -20,6 +20,8 @@ public class PayPalService {
     public OrderRequest createOrderRequest(Long orderId) {
         Order order = orderService.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Заказ не найден"));
 
+        if (!order.getStatus().equals(Order.OrderStatus.CREATED.toString())) throw new IllegalStateException("Неверный статус заказа:" + order.getStatus());
+
         OrderRequest orderRequest = new OrderRequest();
         orderRequest.checkoutPaymentIntent("CAPTURE");
 
@@ -33,17 +35,17 @@ public class PayPalService {
         PurchaseUnitRequest purchaseUnitRequest = new PurchaseUnitRequest()
                 .referenceId(orderId.toString())
                 .description("Market Order")
-                .amountWithBreakdown(new AmountWithBreakdown().currencyCode("RUB").value(String.valueOf(order.getTotalPrice()))
-                        .amountBreakdown(new AmountBreakdown().itemTotal(new Money().currencyCode("RUB").value(String.valueOf(order.getTotalPrice())))))
+                .amountWithBreakdown(new AmountWithBreakdown().currencyCode("USD").value(String.valueOf(order.getTotalPrice()))
+                                                              .amountBreakdown(new AmountBreakdown().itemTotal(new Money().currencyCode("USD").value(String.valueOf(order.getTotalPrice())))))
                 .items(order.getItems().stream()
-                        .map(orderItem -> new Item()
-                                .name(orderItem.getProduct().getTitle())
-                                .unitAmount(new Money().currencyCode("RUB").value(String.valueOf(orderItem.getPrice())))
-                                .quantity(String.valueOf(orderItem.getQuantity())))
-                        .collect(Collectors.toList()))
+                            .map(orderItem -> new Item()
+                                    .name(orderItem.getProduct().getTitle())
+                                    .unitAmount(new Money().currencyCode("USD").value(String.valueOf(orderItem.getPrice())))
+                                    .quantity(String.valueOf(orderItem.getQuantity())))
+                            .collect(Collectors.toList()))
                 .shippingDetail(new ShippingDetail().name(new Name().fullName(order.getUsername()))
-                        .addressPortable(new AddressPortable().addressLine1(order.getAddress())
-                        ));
+                                                    .addressPortable(new AddressPortable().addressLine1("123 Townsend St").addressLine2("Floor 6")
+                                                                                          .adminArea2("San Francisco").adminArea1("CA").postalCode("94107").countryCode("US")));
         purchaseUnitRequests.add(purchaseUnitRequest);
         orderRequest.purchaseUnits(purchaseUnitRequests);
         return orderRequest;

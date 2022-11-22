@@ -6,26 +6,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.alov.market.api.dto.UserProfileDto;
 import ru.alov.market.api.dto.RegisterUserDto;
+import ru.alov.market.api.enums.KafkaTopic;
 import ru.alov.market.auth.converters.UserConverter;
 import ru.alov.market.api.exception.AppError;
-import ru.alov.market.auth.services.MailService;
+import ru.alov.market.auth.services.KafkaProducerService;
 import ru.alov.market.auth.services.UserService;
-
-import javax.mail.MessagingException;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/registration")
 @Tag(name = "Регистрация", description = "Методы для регистрации нового пользователя")
 public class RegistrationController {
 
     private final UserService userService;
     private final UserConverter userConverter;
-    private final MailService mailService;
+    private final KafkaProducerService kafkaProducerService;
 
     @Operation(
             summary = "Запрос на создание нового пользователя",
@@ -40,10 +38,17 @@ public class RegistrationController {
                     )
             }
     )
-    @PostMapping("/registration")
-    public UserProfileDto registrationNewUser(@RequestBody RegisterUserDto registerUserDto) throws MessagingException {
+    @PostMapping()
+    public UserProfileDto registrationNewUser(@RequestBody RegisterUserDto registerUserDto) {
         UserProfileDto userProfileDto = userConverter.entityToDto(userService.createNewUser(registerUserDto));
-        mailService.sendRegistrationMail(userProfileDto);
+        kafkaProducerService.sendUserProfileDto(KafkaTopic.USER_PROFILE_DTO.toString(), userProfileDto);
         return userProfileDto;
     }
+
+    @GetMapping("/confirm_email")
+    public void confirmUserEmail(@RequestParam(name = "username") String username,
+                                 @RequestParam(name = "email") String email) {
+        userService.confirmUserEmail(username, email);
+    }
+
 }

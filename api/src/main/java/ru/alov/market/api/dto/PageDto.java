@@ -10,10 +10,13 @@ public class PageDto<T> {
     @Schema(description = "Список элементов на странице", required = true, example = "1 Конфеты 100.00 Еда")
     private List<T> content;
 
-    @Schema(description = "Заданное количечство элементов на странице", required = true, example = "5")
+    @Schema(description = "Номер на странице", required = true, example = "1")
+    private int page;
+
+    @Schema(description = "Заданное количество элементов на странице", required = true, example = "5")
     private int size;
 
-    @Schema(description = "Фактическое количество эоементво на странице", required = true, example = "2")
+    @Schema(description = "Фактическое количество элементво на странице", required = true, example = "2")
     private int numberOfElements;
 
     @Schema(description = "Общее количество элементов", required = true, example = "10")
@@ -25,8 +28,9 @@ public class PageDto<T> {
     public PageDto() {
     }
 
-    public PageDto(List<T> content, int size, int numberOfElements, long totalElements, int totalPages) {
+    public PageDto(List<T> content, int page, int size, int numberOfElements, long totalElements, int totalPages) {
         this.content = content;
+        this.page = page;
         this.size = size;
         this.numberOfElements = numberOfElements;
         this.totalElements = totalElements;
@@ -39,6 +43,14 @@ public class PageDto<T> {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
     }
 
     public List<T> getContent() {

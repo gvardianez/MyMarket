@@ -17,11 +17,23 @@ public class OrderDto {
     @Schema(description = "Стоимость заказа", required = true, example = "500.00")
     private BigDecimal totalPrice;
 
+    private String email;
+
     @Schema(description = "Адресс заказа", required = true, example = "Tula")
     private String address;
 
     @Schema(description = "Телефон заказчика", required = true, example = "561461263")
     private String phone;
+
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Long getId() {
         return id;
@@ -29,6 +41,14 @@ public class OrderDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getAddress() {
@@ -66,11 +86,13 @@ public class OrderDto {
     public OrderDto() {
     }
 
-    public OrderDto(Long id, List<OrderItemDto> items, BigDecimal totalPrice, String address, String phone) {
+    public OrderDto(Long id, List<OrderItemDto> items, BigDecimal totalPrice, String address, String phone, String status , String email) {
         this.id = id;
         this.items = items;
         this.totalPrice = totalPrice;
         this.address = address;
         this.phone = phone;
+        this.status = status;
+        this.email = email;
     }
 }
