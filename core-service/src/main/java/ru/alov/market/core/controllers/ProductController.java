@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import ru.alov.market.api.dto.ListDto;
 import ru.alov.market.api.dto.PageDto;
 import ru.alov.market.api.dto.ProductDto;
 import ru.alov.market.api.exception.AppError;
@@ -20,6 +23,9 @@ import ru.alov.market.core.repositories.specifications.ProductsSpecifications;
 import ru.alov.market.core.services.ProductService;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -66,6 +72,11 @@ public class ProductController {
     @GetMapping("/{id}")
     public ProductDto getProductById(@PathVariable Long id) {
         return productConverter.entityToDto(productService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Продукт с id: " + id + " не найден")));
+    }
+
+    @PostMapping("/get_products")
+    public Flux<ProductDto> getListProductById(@RequestBody ListDto<Long> longListDto) {
+        return productService.findListByIds(longListDto).map(productConverter::entityToDto);
     }
 
     @Operation(

@@ -1,6 +1,7 @@
 package ru.alov.market.core.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -54,44 +56,8 @@ public class OrderService {
             });
             order.setStatus(Order.OrderStatus.CREATED.name());
             order = orderRepository.save(order);
-            cartServiceIntegration.clearCart(username).subscribe();
             return order;
-        });
-//        AtomicReference<Mono<Order>> orderMono = null;
-//
-//        cartDtoMono.subscribe(cartDto -> {
-//           createOrder(cartDto, username, email, orderDetailsDto);
-//                }
-//        );
-
-//        return orderMono.get();
-//        if (cart.getItems().isEmpty()) {
-//            throw new IllegalStateException("Нельзя оформить заказ для пустой корзины");
-//        }
-//
-//        Order order = new Order();
-//        if (orderDetailsDto.getEmail() == null) {
-//            order.setEmail(email);
-//        } else order.setEmail(orderDetailsDto.getEmail());
-//        order.setTotalPrice(cart.getTotalPrice());
-//        order.setUsername(username);
-//        order.setItems(new ArrayList<>());
-//        order.setAddress(orderDetailsDto.getAddress());
-//        order.setPhone(orderDetailsDto.getPhone());
-//        Order finalOrder = order;
-//        cart.getItems().forEach(ci -> {
-//            OrderItem oi = new OrderItem();
-//            oi.setOrder(finalOrder);
-//            oi.setPrice(ci.getPrice());
-//            oi.setQuantity(ci.getQuantity());
-//            oi.setPricePerProduct(ci.getPricePerProduct());
-//            oi.setProduct(productService.findById(ci.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found")));
-//            finalOrder.getItems().add(oi);
-//        });
-//        order.setStatus(Order.OrderStatus.CREATED.name());
-//        order = orderRepository.save(order);
-//        cartServiceIntegration.clearCart(username);
-//        return order;
+        }).doOnSuccess(order -> cartServiceIntegration.clearCart(username));
     }
 
     @Transactional

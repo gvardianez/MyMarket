@@ -35,7 +35,7 @@ public class KafkaConsumerService {
     }
 
     @KafkaListener(topics = RECOVER_PASSWORD_DTO_TOPIC, groupId = "recover-password.server", containerFactory = "recoverPasswordDtoContainerFactory")
-    public void listenerOrder(RecoverPasswordDto recoverPasswordDto) throws MessagingException {
+    public void listenerRecoverPassword(RecoverPasswordDto recoverPasswordDto) throws MessagingException {
         mailService.sendRecoverPasswordMail(recoverPasswordDto);
     }
 

@@ -3,6 +3,8 @@ package ru.alov.market.api.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Schema(description = "Модель заказа")
@@ -17,6 +19,8 @@ public class OrderDto {
     @Schema(description = "Стоимость заказа", required = true, example = "500.00")
     private BigDecimal totalPrice;
 
+    private String userName;
+
     private String email;
 
     @Schema(description = "Адресс заказа", required = true, example = "Tula")
@@ -26,6 +30,34 @@ public class OrderDto {
     private String phone;
 
     private String status;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     public String getStatus() {
         return status;
@@ -86,13 +118,16 @@ public class OrderDto {
     public OrderDto() {
     }
 
-    public OrderDto(Long id, List<OrderItemDto> items, BigDecimal totalPrice, String address, String phone, String status , String email) {
+    public OrderDto(Long id, List<OrderItemDto> items, BigDecimal totalPrice, String address, String phone, String status, String userName , String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.items = items;
         this.totalPrice = totalPrice;
         this.address = address;
         this.phone = phone;
         this.status = status;
+        this.userName= userName;
         this.email = email;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }
