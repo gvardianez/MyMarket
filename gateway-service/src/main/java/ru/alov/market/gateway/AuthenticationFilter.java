@@ -44,7 +44,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
             if (!isAuthMissing(request)) {
                 final String token = getAuthHeader(request);
-                System.out.println(token);
                 if (jwtUtil.isInvalid(token)) {
                     return this.onError(exchange, "Authorization header is invalid", HttpStatus.UNAUTHORIZED);
                 }

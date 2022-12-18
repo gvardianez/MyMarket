@@ -5,6 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import ru.alov.market.api.dto.ListDto;
 import ru.alov.market.api.dto.ProductDto;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 import ru.alov.market.core.repositories.ProductRepository;
@@ -12,6 +15,7 @@ import ru.alov.market.core.entities.Product;
 import ru.alov.market.core.repositories.specifications.ProductsSpecifications;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -51,5 +55,9 @@ public class ProductService {
 
     public Optional<Product> findById(Long id) {
         return productRepository.findById(id);
+    }
+
+    public Flux<Product> findListByIds(ListDto<Long> longListDto) {
+        return Flux.fromIterable(productRepository.findAllById(longListDto.getContent()));
     }
 }

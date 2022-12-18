@@ -1,6 +1,7 @@
 package ru.alov.market.gateway;
 
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Component
 public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Config> {
     @Autowired
@@ -23,6 +25,7 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
+            log.info("Start");
             ServerHttpRequest request = exchange.getRequest();
 
             if (request.getHeaders().containsKey("username")) {
